@@ -4,14 +4,9 @@ import { ref, computed, watch, watchEffect } from 'vue'
 import BaseDashboardCard from '@/components/weather/BaseDashboardCard.vue'
 import SearchBar from '@/components/weather/SearchBar.vue'
 import WeatherCard from '@/components/weather/WeatherCard.vue'
+import { mockWeatherList } from '@/models/mockWeather'
 
-const weatherList = ref([
-  { id: 'city_01', name: '인천', temp: 22, status: '흐림' , moisture: 80},
-  { id: 'city_02', name: '부산', temp: 25, status: '맑음' , moisture: 60},
-  { id: 'city_03', name: '대전', temp: 24, status: '비' , moisture: 90},
-  { id: 'city_04', name: '광주', temp: 27, status: '맑음' , moisture: 50},
-  { id: 'city_05', name: '대구', temp: 23, status: '흐림' , moisture: 70},
-])
+const weatherList = ref([...mockWeatherList])
 
 const favoriteCity = ref(null) // 즐겨찾기 도시 목록
 const handleFavorite = (city) => {
@@ -45,7 +40,11 @@ const showDetail = (cityName, status) => {
 <template>
   <div class="dashboard-wrapper">
     <BaseDashboardCard>
-      <SearchBar :current-query="searchQuery" @update-query="(val) => (searchQuery = val)" />
+      <SearchBar
+        :current-query="searchQuery"
+        :show-button="false"
+        @update-query="(val) => (searchQuery = val)"
+      />
     </BaseDashboardCard>
 
     <BaseDashboardCard>

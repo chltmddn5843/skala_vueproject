@@ -1,16 +1,22 @@
 <script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import UnitToggler from '@/components/weather/UnitToggler.vue'
 
 const navigation = [
-  { to: '/', label: '실시간 날씨' },
+  { to: '/', label: '서비스 소개' },
+  { to: '/weather', label: '실시간 날씨' },
   { to: '/mockup', label: 'Mockup' },
   { to: '/composition', label: 'Composition' },
   { to: '/components', label: 'Components' },
   { to: '/regions', label: '지역 선택' },
   { to: '/weather-api', label: 'Axios 날씨' },
   { to: '/crud', label: 'Axios CRUD' },
-  { to: '/about', label: '소개' },
+  { to: '/examples', label: 'Vue 예제' },
 ]
+const route = useRoute()
+const unitRoutes = ['/weather', '/mockup', '/composition', '/components', '/regions']
+const showUnitToggler = computed(() => unitRoutes.includes(route.path))
 </script>
 
 <template>
@@ -27,7 +33,7 @@ const navigation = [
           {{ item.label }}
         </RouterLink>
       </nav>
-      <UnitToggler class="unit-control" />
+      <UnitToggler v-if="showUnitToggler" class="unit-control" />
       <main>
         <RouterView />
       </main>

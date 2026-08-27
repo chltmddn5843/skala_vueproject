@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
+import { toWeatherModel } from '@/models/weather'
 
 const weatherData = ref(null)
 const isLoading = ref(false)
@@ -14,7 +15,7 @@ const handleFetchWeather = async () => {
     // fetch와 달리 .json() 변환 과정 없이 response.data에 알맹이가 즉시 담깁니다.
     console.log('Axios 통신 응답 전체 객체:', response)
     console.log('백엔드가 준 핵심 날씨 데이터(JSON):', response.data)
-    weatherData.value = response.data
+    weatherData.value = toWeatherModel(response.data)
   } catch (error) {
     // 4xx, 5xx 에러나 네트워크 오프라인 시 자동으로 이 catch 영역으로 튕겨 들어옵니다.
     console.error('통신 중 에러가 발생했습니다:', error)
@@ -37,14 +38,18 @@ const handleFetchWeather = async () => {
         📍 위치: <strong>{{ weatherData.name }}</strong>
       </p>
       <p>
-        🌡️ 현재 기온: <strong>{{ weatherData.main.temp }}°C</strong> (정상 섭씨 변환 완료)
+        🌡️ 현재 기온: <strong>{{ weatherData.temp }}°C</strong>
       </p>
       <p>
-        ☁️ 날씨 상태: <strong>{{ weatherData.weather[0].description }}</strong>
+        🌡️ 체감 온도: <strong>{{ weatherData.feelsLike }}°C</strong>
       </p>
       <p>
-        💧 습도: <strong>{{ weatherData.main.humidity }}%</strong>
+        ☁️ 날씨 상태: <strong>{{ weatherData.status }}</strong>
       </p>
+      <p>💧 습도: <strong>{{ weatherData.moisture }}%</strong></p>
+      <p>☁️ 구름 양: <strong>{{ weatherData.cloudiness }}%</strong></p>
+      <p>💨 풍속: <strong>{{ weatherData.wind }}m/s</strong></p>
+      <p>💡 {{ weatherData.recommendation }}</p>
     </div>
     <div v-else>
       <p>아직 가져온 데이터가 없습니다. 버튼을 눌러 통신을 가동하세요.</p>

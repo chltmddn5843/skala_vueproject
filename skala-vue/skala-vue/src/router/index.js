@@ -1,16 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import WeatherHomeView from '@/views/weather/WeatherHomeView.vue'
+import WeatherAboutView from '@/views/weather/WeatherAboutView.vue'
 
 const routes = [
   {
     path: '/',
-    name: 'WeatherHome',
-    component: WeatherHomeView,
+    name: 'WeatherAbout',
+    component: WeatherAboutView,
   },
   {
     path: '/about',
-    name: 'WeatherAbout',
-    component: () => import('@/views/weather/WeatherAboutView.vue'),
+    redirect: '/',
+  },
+  {
+    path: '/weather',
+    name: 'WeatherHome',
+    component: () => import('@/views/weather/WeatherHomeView.vue'),
   },
   {
     path: '/weather/:cityId',
@@ -46,6 +50,11 @@ const routes = [
     path: '/crud',
     name: 'Crud',
     component: () => import('@/views/examples/AxiosJson.vue'),
+  },
+  {
+    path: '/examples',
+    name: 'Examples',
+    component: () => import('@/views/ExamplesView.vue'),
   },
   {
     path: '/:pathMatch(.*)*',

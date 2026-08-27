@@ -19,11 +19,14 @@ export const useWeatherViewModel = () => {
 
     isLoading.value = true
     errorMessage.value = ''
+    const minimumLoading = new Promise((resolve) => setTimeout(resolve, 2000))
     try {
-      const weather = toWeatherModel(await getCurrentWeather(city))
+      const [data] = await Promise.all([getCurrentWeather(city), minimumLoading])
+      const weather = toWeatherModel(data)
       weatherList.value = [weather]
       selectedCityInfo.value = `${weather.name} 날씨를 불러왔습니다.`
     } catch {
+      await minimumLoading
       weatherList.value = []
       errorMessage.value = '도시를 찾지 못했거나 날씨 정보를 불러오지 못했습니다.'
     } finally {

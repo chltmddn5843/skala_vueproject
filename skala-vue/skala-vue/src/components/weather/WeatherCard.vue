@@ -1,27 +1,37 @@
 <script setup>
 import { computed } from 'vue'
 import { useConfigStore } from '@/stores/configStore'
+import { withSubjectParticle } from '@/utils/korean'
 
 const props = defineProps({
   cityItem: {
     type: Object,
     required: true,
   },
+  showFavorite: {
+    type: Boolean,
+    default: true,
+  },
+  showDetail: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const emit = defineEmits(['select-card', 'click-detail', 'favorite'])
 const configStore = useConfigStore()
-const displayTemp = computed(() =>
+const convertTemp = (temp) =>
   Math.round(
     configStore.unit === 'celsius'
-      ? props.cityItem.temp
-      : (props.cityItem.temp * 9) / 5 + 32,
-  ),
-)
+      ? temp
+      : (temp * 9) / 5 + 32,
+  )
+const displayTemp = computed(() => convertTemp(props.cityItem.temp))
+const displayFeelsLike = computed(() => convertTemp(props.cityItem.feelsLike))
 </script>
 
 <template>
-  <div class="weather-card" @click="emit('select-card', `${cityItem.name}이 선택되었습니다.`)">
+  <div class="weather-card" @click="emit('select-card', `${withSubjectParticle(cityItem.name)} 선택되었습니다.`)">
     <div class="weather-summary">
       <h4>{{ cityItem.name }}</h4>
       <p>{{ cityItem.status }} · {{ displayTemp }}{{ configStore.unitSymbol }}</p>
@@ -30,9 +40,30 @@ const displayTemp = computed(() =>
     <span v-if="cityItem.temp >= 25" class="badge hot">🔥 더움</span>
     <span v-else class="badge cool">❄️ 선선함</span>
 
-    <button class="btn-detail" @click.stop="emit('click-detail', cityItem.name, cityItem.status)">상세</button>
+    <button v-if="showDetail" class="btn-detail" @click.stop="emit('click-detail', cityItem.name, cityItem.status)">상세</button>
 
-    <button class="btn-favorite" @click.stop="emit('favorite', cityItem)">관심</button>
+    <button v-if="showFavorite" class="btn-favorite" @click.stop="emit('favorite', cityItem)">관심</button>
+
+    <dl class="weather-metrics">
+      <div>
+        <dt>체감</dt>
+        <dd>{{ displayFeelsLike }}{{ configStore.unitSymbol }}</dd>
+      </div>
+      <div>
+        <dt>습도</dt>
+        <dd>{{ cityItem.moisture }}%</dd>
+      </div>
+      <div>
+        <dt>구름</dt>
+        <dd>{{ cityItem.cloudiness }}%</dd>
+      </div>
+      <div>
+        <dt>풍속</dt>
+        <dd>{{ cityItem.wind }}m/s</dd>
+      </div>
+    </dl>
+
+    <p class="activity">💡 {{ cityItem.recommendation }}</p>
   </div>
 </template>
 
@@ -48,6 +79,7 @@ const displayTemp = computed(() =>
 
   /* 1. 플렉스박스로 변경하여 내부 요소를 좌우 정렬 */
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
@@ -99,7 +131,27 @@ const displayTemp = computed(() =>
   border-color: #aebfe8;
 }
 
+.weather-metrics {
+  flex-basis: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 4px 0 0;
+}
+
+.weather-metrics div { padding: 8px; background: #f8faff; border-radius: 8px; }
+.weather-metrics dt { color: #8994a5; font-size: 11px; }
+.weather-metrics dd { color: var(--color-heading); font-size: 13px; font-weight: 700; }
+.activity {
+  flex-basis: 100%;
+  padding: 10px 12px;
+  color: #3559a8;
+  background: #eef4ff;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
 @media (max-width: 560px) {
-  .weather-card { flex-wrap: wrap; }
+  .weather-metrics { grid-template-columns: repeat(2, 1fr); }
 }
 </style>

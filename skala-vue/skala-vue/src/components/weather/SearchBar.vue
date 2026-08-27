@@ -15,6 +15,10 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  showButton: {
+    type: Boolean,
+    default: true,
+  },
 })
 </script>
 
@@ -30,6 +34,7 @@ defineProps({
         fluid
       />
       <Button
+        v-if="showButton"
         type="button"
         label="검색"
         :loading="isLoading"

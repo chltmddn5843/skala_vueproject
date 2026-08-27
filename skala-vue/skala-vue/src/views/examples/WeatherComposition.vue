@@ -7,14 +7,12 @@
 
 <script setup>
 import { ref, computed, watch, watchEffect } from 'vue'
+import BaseDashboardCard from '@/components/weather/BaseDashboardCard.vue'
+import SearchBar from '@/components/weather/SearchBar.vue'
+import WeatherCard from '@/components/weather/WeatherCard.vue'
+import { mockWeatherList } from '@/models/mockWeather'
 // 1. [1일차 데이터] 가상의 백엔드 데이터 배열
-const weatherList = ref([
-  { id: 'city_01', name: '인천', temp: 19, status: '흐림' , moisture: 80},
-  { id: 'city_02', name: '부산', temp: 25, status: '맑음' , moisture: 60},
-  { id: 'city_03', name: '대전', temp: 24, status: '비' , moisture: 90},
-  { id: 'city_04', name: '광주', temp: 27, status: '맑음' , moisture: 50},
-  { id: 'city_05', name: '대구', temp: 23, status: '흐림' , moisture: 70},
-])
+const weatherList = ref([...mockWeatherList])
 
 // 2. [1일차 데이터] 검색어 및 알림창 제어용 데이터
 const searchQuery = ref('')
@@ -54,30 +52,28 @@ const showDetail = (cityName, status) => {
 
 <template>
   <div class="dashboard-wrapper">
-    <section class="search-box">
-      <h3>🔍 도시 검색</h3>
-      <input type="text" :value="searchQuery" @input="(e) => (searchQuery = e.target.value)" placeholder="검색할 도시 이름 입력" />
-      <p>
-        검색 중인 도시: <strong>{{ searchQuery }}</strong>
-      </p>
-    </section>
+    <BaseDashboardCard>
+      <SearchBar
+        :current-query="searchQuery"
+        :show-button="false"
+        @update-query="(value) => (searchQuery = value)"
+      />
+    </BaseDashboardCard>
 
-    <section class="list-box">
-      <h3>🏙️ 지역별 날씨 현황</h3>
+    <BaseDashboardCard>
+      <h3>지역별 날씨 현황</h3>
 
-      <div v-for="item in filteredWeatherList" :key="item.id" class="weather-card" @click="selectedCityInfo = `${item.name}이 선택되었습니다.`">
-        <h4>{{ item.name }} ({{ item.status }})</h4>
-        <p>현재 기온: {{ item.temp }}°C</p>
-
-        <span v-if="item.temp >= 25" class="badge hot">🔥 더움 (25도 이상)</span>
-        <span v-else-if="item.temp >= 20" class="badge warm">🌤️ 따뜻함 (20~24도)</span>
-        <span v-else class="badge cool">❄️ 선선함 (25도 미만)</span>
-
-        <button class="btn-detail" @click.stop="showDetail(item.name, item.status)">상세보기</button>
-      </div>
+      <WeatherCard
+        v-for="item in filteredWeatherList"
+        :key="item.id"
+        :city-item="item"
+        :show-favorite="false"
+        @select-card="(message) => (selectedCityInfo = message)"
+        @click-detail="showDetail"
+      />
 
       <p v-if="filteredWeatherList.length === 0" style="text-align: center; color: #e74c3c; padding: 10px 0">😭 검색 결과와 일치하는 도시가 없습니다.</p>
-    </section>
+    </BaseDashboardCard>
 
     <div class="status-bar">
       {{ selectedCityInfo }}

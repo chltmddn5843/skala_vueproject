@@ -13,8 +13,6 @@ const getWithParam = (name, e) => {
 const compareTarget = (e) => {
   tagName.value = `target: ${e.target.tagName} / currentTarget: ${e.currentTarget.tagName}`
 }
-const
-
 </script>
 
 <template>
@@ -30,5 +28,4 @@ const
     <button @click="compareTarget"><strong>target과 currentTarget 비교</strong></button>
   </div>
 </template>
-
 

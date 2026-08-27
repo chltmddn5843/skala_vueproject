@@ -1,13 +1,9 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
+import WeatherCard from '@/components/weather/WeatherCard.vue'
+import { mockWeatherList } from '@/models/mockWeather'
 
-const weatherList = [
-  { id: 'city_01', name: '인천', temp: 19, status: '흐림', moisture: 80 },
-  { id: 'city_02', name: '부산', temp: 25, status: '맑음', moisture: 60 },
-  { id: 'city_03', name: '대전', temp: 24, status: '비', moisture: 90 },
-  { id: 'city_04', name: '광주', temp: 27, status: '맑음', moisture: 50 },
-  { id: 'city_05', name: '대구', temp: 23, status: '흐림', moisture: 70 },
-]
+const weatherList = mockWeatherList
 
 const selectedCityId = ref('')
 const hoverCount = ref(0)
@@ -57,15 +53,12 @@ watch(hoverCount, (count, previousCount) => {
       </div>
     </section>
 
-    <article v-if="selectedCity" class="weather-card">
-      <h4>{{ selectedCity.name }} ({{ selectedCity.status }})</h4>
-      <p>현재 기온: {{ selectedCity.temp }}°C</p>
-      <p>습도: {{ selectedCity.moisture }}%</p>
-
-      <span v-if="selectedCity.temp >= 25" class="badge hot">🔥 더움</span>
-      <span v-else-if="selectedCity.temp >= 21" class="badge warm">🌤️ 따뜻함</span>
-      <span v-else class="badge cool">❄️ 선선함</span>
-    </article>
+    <WeatherCard
+      v-if="selectedCity"
+      :city-item="selectedCity"
+      :show-detail="false"
+      :show-favorite="false"
+    />
     
     <p v-else class="status-bar">지역 버튼에 마우스를 올려보세요.</p>
     
