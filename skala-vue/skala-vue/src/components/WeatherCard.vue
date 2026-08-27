@@ -12,11 +12,12 @@ const props = defineProps({
 const emit = defineEmits(['select-card', 'click-detail', 'favorite'])
 const configStore = useConfigStore()
 const displayTemp = computed(() =>
-  configStore.unit === 'celsius' ? props.cityItem.temp : (props.cityItem.temp * 9) / 5 + 32,
+  Math.round(
+    configStore.unit === 'celsius'
+      ? props.cityItem.temp
+      : (props.cityItem.temp * 9) / 5 + 32,
+  ),
 )
-
-
-
 </script>
 
 <template>

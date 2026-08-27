@@ -1,69 +1,76 @@
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 
 import BaseDashboardCard from '../components/BaseDashboardCard.vue'
 import SearchBar from '../components/SearchBar.vue'
 import WeatherCard from '../components/WeatherCard.vue'
 
-const router = useRouter()
-const route = useRoute()
-
-const weatherList = ref([
-  { id: 'city_01', name: '서울', temp: 28, status: '맑음' },
-  { id: 'city_02', name: '수원', temp: 24, status: '비' },
-  { id: 'city_03', name: '부산', temp: 26, status: '구름' },
-])
-
-const searchQuery = ref('')
-const selectedCityInfo = ref('카드를 클릭하거나 검색해 보세요.')
+const weatherList = ref([])
+const searchQuery = ref('Seoul')
+const selectedCityInfo = ref('도시를 검색해 보세요.')
 const favoriteCity = ref(null)
+const isLoading = ref(false)
+const errorMessage = ref('')
 
-// 초기 마운트 시 주소창의 쿼리(?search=) 스트링 읽어서 상태 복원 (KeepAlive를 적용해야만 동작함)
-onMounted(() => {
-  if (route.query.search) {
-    searchQuery.value = route.query.search
+const fetchWeather = async () => {
+  const city = searchQuery.value.trim()
+  const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY
+
+  if (!city || !apiKey) {
+    errorMessage.value = apiKey ? '도시 이름을 입력해 주세요.' : '날씨 API 키가 필요합니다.'
+    return
   }
-})
 
-// 타이핑될 때마다 주소창의 쿼리 스트링 값을 실시간 푸시 개편 (현재 큰 의미없음)
-watch(searchQuery, (newQuery) => {
-  router.push({
-    path: route.path,
-    query: { search: newQuery || undefined },
-  })
-})
-
-const filteredWeatherList = computed(() => {
-  const query = searchQuery.value.trim()
-  if (!query) return weatherList.value
-  return weatherList.value.filter((item) => item.name.includes(query))
-})
-
-// 자식 카드 컴포넌트의 상세보기 신호를 받으면 해당 ID 주소로 라우터 점프 실행
-const handleDetailJump = (id) => {
-  router.push(`/weather/${id}`)
+  isLoading.value = true
+  errorMessage.value = ''
+  try {
+    const { data } = await axios.get('https://api.openweathermap.org/data/2.5/weather', {
+      params: { q: city, appid: apiKey, units: 'metric', lang: 'kr' },
+    })
+    weatherList.value = [{
+      id: data.id,
+      name: data.name,
+      temp: data.main.temp,
+      status: data.weather[0].description,
+      moisture: data.main.humidity,
+    }]
+    selectedCityInfo.value = `${data.name} 날씨를 불러왔습니다.`
+  } catch {
+    weatherList.value = []
+    errorMessage.value = '도시를 찾지 못했거나 날씨 정보를 불러오지 못했습니다.'
+  } finally {
+    isLoading.value = false
+  }
 }
 
 const handleFavorite = (city) => {
   favoriteCity.value = city
 }
+
+onMounted(fetchWeather)
 </script>
 
 <template>
   <div class="dashboard-wrapper">
     <BaseDashboardCard>
-      <SearchBar :current-query="searchQuery" @update-query="(val) => (searchQuery = val)" />
+      <SearchBar
+        :current-query="searchQuery"
+        @update-query="(val) => (searchQuery = val)"
+        @search="fetchWeather"
+      />
     </BaseDashboardCard>
 
     <BaseDashboardCard>
-      <h3>🏙️ 지역별 날씨 현황</h3>
+      <h3>현재 날씨</h3>
+      <p v-if="isLoading" class="message">날씨를 불러오는 중입니다.</p>
+      <p v-else-if="errorMessage" class="message error">{{ errorMessage }}</p>
       <WeatherCard
-        v-for="item in filteredWeatherList"
+        v-for="item in weatherList"
         :key="item.id"
         :city-item="item"
         @select-card="(msg) => (selectedCityInfo = msg)"
-        @click-detail="handleDetailJump(item.id)"
+        @click-detail="(name, status) => (selectedCityInfo = `${name}의 현재 날씨는 ${status}입니다.`)"
         @favorite="handleFavorite"
       />
     </BaseDashboardCard>
@@ -76,11 +83,14 @@ const handleFavorite = (city) => {
 
 <style scoped>
 .status-bar {
-  background: #e8f5e9;
+  background: #eef4ff;
   padding: 10px;
   text-align: center;
-  color: #2e7d32;
+  color: #3559a8;
   font-weight: bold;
   border-radius: 6px;
 }
+
+.message { padding: 14px 0; color: #7b8798; }
+.message.error { color: #c2414b; }
 </style>

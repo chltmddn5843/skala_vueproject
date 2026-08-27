@@ -18,6 +18,11 @@ const routes = [
     component: () => import('../views/WeatherDetailView.vue'),
   },
   {
+    path: '/crud',
+    name: 'Crud',
+    component: () => import('../components/AxiosJson.vue'),
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('../views/NotFoundView.vue'),
