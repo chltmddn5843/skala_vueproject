@@ -1,5 +1,16 @@
 <script setup>
-import UnitToggler from './components/UnitToggler.vue'
+import UnitToggler from '@/components/weather/UnitToggler.vue'
+
+const navigation = [
+  { to: '/', label: '실시간 날씨' },
+  { to: '/mockup', label: 'Mockup' },
+  { to: '/composition', label: 'Composition' },
+  { to: '/components', label: 'Components' },
+  { to: '/regions', label: '지역 선택' },
+  { to: '/weather-api', label: 'Axios 날씨' },
+  { to: '/crud', label: 'Axios CRUD' },
+  { to: '/about', label: '소개' },
+]
 </script>
 
 <template>
@@ -7,10 +18,16 @@ import UnitToggler from './components/UnitToggler.vue'
     <h1>SKALA Weather</h1>
     <div class="dashboard-wrapper">
       <nav class="navigation-bar">
-        <RouterLink to="/" class="nav-item">날씨</RouterLink>
-        <RouterLink to="/about" class="nav-item">서비스 소개</RouterLink>
-        <UnitToggler />
+        <RouterLink
+          v-for="item in navigation"
+          :key="item.to"
+          :to="item.to"
+          class="nav-item"
+        >
+          {{ item.label }}
+        </RouterLink>
       </nav>
+      <UnitToggler class="unit-control" />
       <main>
         <RouterView />
       </main>
@@ -20,4 +37,9 @@ import UnitToggler from './components/UnitToggler.vue'
 
 <style>
 @import '@/assets/exercise.css';
+
+.unit-control {
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
 </style>

@@ -1,9 +1,9 @@
 <script setup>
 import { ref, computed, watch, watchEffect } from 'vue'
 // 1. 컴포넌트 파일명 국룰 표기법(PascalCase) 매칭 수입
-import BaseDashboardCard from './BaseDashboardCard.vue'
-import SearchBar from './SearchBar.vue'
-import WeatherCard from './WeatherCard.vue'
+import BaseDashboardCard from '@/components/weather/BaseDashboardCard.vue'
+import SearchBar from '@/components/weather/SearchBar.vue'
+import WeatherCard from '@/components/weather/WeatherCard.vue'
 
 const weatherList = ref([
   { id: 'city_01', name: '인천', temp: 22, status: '흐림' , moisture: 80},

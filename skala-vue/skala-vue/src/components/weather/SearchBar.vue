@@ -1,4 +1,7 @@
 <script setup>
+import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
+
 // 1. 상위로 입력 텍스트를 전달할 커스텀 이벤트 등록 (매크로)
 defineEmits(['update-query', 'search'])
 
@@ -8,6 +11,10 @@ defineProps({
     type: String,
     default: '',
   },
+  isLoading: {
+    type: Boolean,
+    default: false,
+  },
 })
 </script>
 
@@ -15,14 +22,19 @@ defineProps({
   <div class="search-inner">
     <h3>도시 찾기</h3>
     <div class="search-row">
-      <input
-        type="search"
-        :value="currentQuery"
-        @input="$emit('update-query', $event.target.value)"
+      <InputText
+        :model-value="currentQuery"
+        @update:model-value="$emit('update-query', $event)"
         @keyup.enter="$emit('search')"
         placeholder="예: Seoul, Busan"
+        fluid
       />
-      <button type="button" @click="$emit('search')">검색</button>
+      <Button
+        type="button"
+        label="검색"
+        :loading="isLoading"
+        @click="$emit('search')"
+      />
     </div>
     <p>
       {{ currentQuery ? `“${currentQuery}” 검색 중` : '도시 이름으로 검색해 보세요.' }}
@@ -31,29 +43,8 @@ defineProps({
 </template>
 
 <style scoped>
-input {
-  width: 100%;
-  padding: 11px 13px;
-  font-size: 14px;
-  border: 1px solid #ced9e7;
-  border-radius: 9px;
-  outline: none;
-}
-
-input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(71, 118, 230, 0.12);
-}
-
 .search-row { display: flex; gap: 8px; }
-.search-row button {
-  padding: 0 18px;
-  color: white;
-  background: var(--color-primary);
-  border: 0;
-  border-radius: 9px;
-  cursor: pointer;
-}
+.search-row .p-inputtext { flex: 1; min-width: 0; }
 
 h3 { margin-bottom: 10px; color: var(--color-heading); font-weight: 700; }
 p { margin-top: 8px; color: #7b8798; font-size: 13px; }

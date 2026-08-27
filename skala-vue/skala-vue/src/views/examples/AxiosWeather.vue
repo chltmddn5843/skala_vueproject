@@ -7,25 +7,10 @@ const isLoading = ref(false)
 const errorMessage = ref('')
 
 const handleFetchWeather = async () => {
-  const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY
-  if (!API_KEY) {
-    errorMessage.value = '.env 파일에 VITE_OPENWEATHER_API_KEY를 설정해 주세요.'
-    return
-  }
-
   isLoading.value = true
   errorMessage.value = ''
   try {
-    // 비동기 통신 가동: 서버에서 데이터를 다 가져올 때까지 await로 기다립니다.
-    const response = await axios.get('https://api.openweathermap.org/data/2.5/weather', {
-      params: {
-        lat: 37.492416,
-        lon: 126.704664,
-        appid: API_KEY,
-        units: 'metric',
-        lang: 'kr',
-      },
-    })
+    const response = await axios.get('/api/weather', { params: { city: 'Incheon' } })
     // fetch와 달리 .json() 변환 과정 없이 response.data에 알맹이가 즉시 담깁니다.
     console.log('Axios 통신 응답 전체 객체:', response)
     console.log('백엔드가 준 핵심 날씨 데이터(JSON):', response.data)
