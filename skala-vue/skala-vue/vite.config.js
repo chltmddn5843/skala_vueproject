@@ -6,6 +6,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/skala_vueproject/', // GitHub Pages 경로에 맞춰 추가
   plugins: [
     vue(),
     vueDevTools(),
