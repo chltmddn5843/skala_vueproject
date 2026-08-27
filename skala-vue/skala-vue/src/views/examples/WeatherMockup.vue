@@ -26,7 +26,7 @@ const showDetail = (city) => {
         :city-item="item"
         :show-favorite="false"
         @select-card="(message) => (selectedCityInfo = message)"
-        @click-detail="showDetail(item)"
+        @click-detail="showDetail(item)" 
       />
     </BaseDashboardCard>
 
